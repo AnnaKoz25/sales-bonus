@@ -89,7 +89,6 @@ function analyzeSalesData(data, options) {
       const reven = calculateRevenue(item); // выручка со скидкой
       const profit = reven - cost;
       seller.profit = (seller.profit || 0) + profit;
-
       if (!seller.products_sold[item.sku]) {
         seller.products_sold[item.sku] = 0;
       }
@@ -116,17 +115,16 @@ function analyzeSalesData(data, options) {
     let tryArr = Object.entries(seller.products_sold)
       .map(([sku, quantity]) => ({ sku, quantity }))
       .sort((a, b) => {
-        if (a.quantity > b.quantity) {
+        if (a.quantity < b.quantity) {
           return 1;
         }
-        if (a.quantity < b.quantity) {
+        if (a.quantity > b.quantity) {
           return -1;
         }
         if (a.quantity === b.quantity) {
           return 0;
         }
       })
-      .reverse()
       .slice(0, 10);
     seller.top_products = tryArr;
   });
@@ -137,7 +135,7 @@ function analyzeSalesData(data, options) {
     revenue: +seller.revenue.toFixed(2),
     profit: +seller.profit.toFixed(2),
     sales_count: seller.sales_count,
-    products_sold: seller.top_products,
+    top_products: seller.top_products,
     bonus: +seller.bonus.toFixed(2),
   }));
 }
